@@ -83,13 +83,18 @@ class GiftedMessenger extends Component {
       },
       textInputContainer: {
         height: 44,
-        borderTopWidth: 1 / PixelRatio.get(),
-        borderColor: '#b2b2b2',
         flexDirection: 'row',
         paddingLeft: 10,
         paddingRight: 10,
         alignItems:'center',
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        shadowColor: '#000000',
+        shadowOffset: {
+          width: 0,
+          height: 3
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.3,
       },
       textInput: {
         alignSelf: 'center',
@@ -98,7 +103,7 @@ class GiftedMessenger extends Component {
         backgroundColor: '#F7F7F7',
         flex: 1,
         padding: 0,
-        margin: 0,
+        marginLeft: 8,
         fontSize: 15,
       },
       sendButton: {
@@ -566,8 +571,14 @@ class GiftedMessenger extends Component {
   renderTextInput() {
     if (this.props.hideTextInput === false) {
       return (
-        <View style={this.styles.textInputContainer}>
+        <View style={this.styles.textInputContainer} elevation={7}>
           {this.props.leftControlBar}
+          <Button
+            style={this.styles.sendButton}
+            onPress={this.props.textInputLeftIconAction}
+          >
+            <Image source={this.props.textInputLeftIcon} style ={{width:30,height:30, alignSelf:'center'}}/>
+          </Button>
           <TextInput
             style={this.styles.textInput}
             placeholder={this.props.placeholder}
@@ -640,7 +651,9 @@ GiftedMessenger.defaultProps = {
   text: '',
   typingMessage: '',
   textInputRightIcon: '',
-  textInputRightIconAction: ()=>{}
+  textInputRightIconAction: ()=>{},
+  textInputLeftIcon: '',
+  textInputLeftIconAction: ()=>{}
 };
 
 GiftedMessenger.propTypes = {
@@ -683,6 +696,8 @@ GiftedMessenger.propTypes = {
   typingMessage: React.PropTypes.string,
   textInputRightIcon: React.PropTypes.string,
   textInputRightIconAction: React.PropTypes.func,
+  textInputLeftIcon: React.PropTypes.string,
+  textInputLeftIconAction: React.PropTypes.func,
 };
 
 
