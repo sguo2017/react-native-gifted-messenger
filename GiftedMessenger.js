@@ -98,13 +98,15 @@ class GiftedMessenger extends Component {
       },
       textInput: {
         alignSelf: 'center',
-        height: 30,
+        height: 32,
         width: 100,
         backgroundColor: '#F7F7F7',
         flex: 1,
-        padding: 0,
+        paddingLeft: 8,
         marginLeft: 8,
         fontSize: 15,
+        paddingBottom: 4,
+        borderRadius: 4,
       },
       sendButton: {
         marginTop: 11,
