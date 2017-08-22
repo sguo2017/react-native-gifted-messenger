@@ -2,7 +2,8 @@ import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import ParsedText from 'react-native-parsed-text';
-
+import Emoji from 'react-native-emoji';
+import emojis from './emoji'
 const styles = StyleSheet.create({
   bubble: {
     borderRadius: 15,
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
   },
   bubbleRight: {
     marginLeft: 70,
-    backgroundColor: '#ffc400',
+    backgroundColor: '#007aff',
     alignSelf: 'flex-end',
   },
   bubbleCenter: {
@@ -51,7 +52,16 @@ export default class Bubble extends React.Component {
     if (this.props.renderCustomText) {
       return this.props.renderCustomText(this.props);
     }
-
+    textArr = text.split('\\');
+    let newText = [];
+    for(let i=0;i<textArr.length;i++){
+      if(emojis["1"].indexOf(textArr[i])>-1){
+        newText[i]= <Emoji name={textArr[i]}/>
+      }else{ 
+        newText[i]=textArr[i]
+      }
+    }
+   
     if (this.props.parseText === true) {
       return (
         <ParsedText
@@ -81,15 +91,31 @@ export default class Bubble extends React.Component {
               },
             ]
           }
-        >
-          {text}
+        > 
+        <Text>
+          {
+            newText.map((data, index)=>{
+              return(
+                 <Text key={index}>{data}</Text>
+              )            
+            })
+          }
+        </Text>
         </ParsedText>
       );
     }
 
     return (
       <Text style={[styles.text, (position === 'left' ? styles.textLeft : position === 'right' ? styles.textRight : styles.textCenter)]}>
-        {text}
+        <Text>
+          {
+            newText.map((data, index)=>{
+              return(
+                 <Text key={index}>{data}</Text>
+              )    
+            })
+          }
+        </Text>
       </Text>
     );
   }

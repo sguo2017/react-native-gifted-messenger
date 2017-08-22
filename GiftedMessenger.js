@@ -10,7 +10,9 @@ import {
   Animated,
   Platform,
   PixelRatio,
-  Image
+  Image,
+  TouchableOpacity,
+  Keyboard
 } from 'react-native';
 
 import Message from './Message';
@@ -19,7 +21,9 @@ import moment from 'moment';
 import {setLocale} from './Locale';
 import deepEqual from 'deep-equal';
 import Button from 'react-native-button';
-
+import Emoji from 'react-native-emoji';
+import Swiper from 'react-native-swiper'
+import emojis from './emoji'
 class GiftedMessenger extends Component {
 
   constructor(props) {
@@ -69,9 +73,10 @@ class GiftedMessenger extends Component {
       disabled: true,
       height: new Animated.Value(this.listViewMaxHeight),
       appearAnim: new Animated.Value(0),
+      showEmoji: false,
+      actionAnim: new Animated.Value(0)
     };
   }
-
   componentWillMount() {
     this.styles = {
       container: {
@@ -80,6 +85,7 @@ class GiftedMessenger extends Component {
       },
       listView: {
         flex: 1,
+        height: 300
       },
       textInputContainer: {
         height: 44,
@@ -582,6 +588,7 @@ class GiftedMessenger extends Component {
             <Image source={this.props.textInputLeftIcon} style ={{width:30,height:30, alignSelf:'center'}}/>
           </Button>
           <TextInput
+            ref ="textInput"
             style={this.styles.textInput}
             placeholder={this.props.placeholder}
             placeholderTextColor={this.props.placeholderTextColor}
@@ -594,16 +601,103 @@ class GiftedMessenger extends Component {
             underlineColorAndroid="transparent"
             blurOnSubmit={this.props.blurOnSubmit}
           />
+          {
+            this.state.showEmoji?
+            <Button
+            style={this.styles.sendButton}
+            onPress={this.handleEmojiClose.bind(this)}>
+            <Image source={this.props.textInputRightIconToggle} style ={{width:30,height:30, alignSelf:'center'}}/>
+          </Button>
+          :
           <Button
             style={this.styles.sendButton}
-            onPress={this.props.textInputRightIconAction}
-          >
+            onPress={this.handleEmojiOpen.bind(this)}>
             <Image source={this.props.textInputRightIcon} style ={{width:30,height:30, alignSelf:'center'}}/>
           </Button>
+          }
         </View>
       );
     }
     return null;
+  }
+
+  handleEmojiOpen() {
+    this.setState({
+      showEmoji: true,
+    })
+    Keyboard.dismiss()
+    Animated.timing(this.state.height, {
+      toValue: this.listViewMaxHeight -260,
+      duration: 200,
+    }).start();
+    Animated.timing(          // Uses easing functions
+        this.state.actionAnim,    // The value to drive
+        {toValue: 1}           // Configuration
+    ).start();
+  }
+
+   handleEmojiClose() {
+    this.setState({
+      showEmoji: false,
+    })
+    Animated.timing(this.state.height, {
+      toValue: this.listViewMaxHeight,
+      duration: 200,
+    }).start();
+    Animated.timing(          // Uses easing functions
+        this.state.actionAnim,    // The value to drive
+        {toValue: 0}           // Configuration
+    ).start();
+
+    this.refs["textInput"].focus();
+  }
+
+  handleEmojiClick(name){
+    let inputValue = this.state.text;
+    inputValue = inputValue +'\\'+name+'\\';
+    this.setState({
+      text: inputValue
+    })
+  }
+  renderEmoji(){
+    return <Animated.View 
+      style={[{opacity:this.state.actionAnim,transform:[{
+      translateY: this.state.actionAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [150, 0]  // 0 : 150, 0.5 : 75, 1 : 0
+      })}]}]}
+    >
+      <View style={{width:Dimensions.get('window').width, height:260,backgroundColor:'#fff'}} >
+        <Swiper>
+          <View style={{flex:1, flexDirection:'row', flexWrap: 'wrap',justifyContent: 'space-around'}}>
+            {
+              emojis["1"].map((name, index)=>{
+                return(
+                  <TouchableOpacity key={index} style={{margin:8}} onPress={() => {
+                        this.handleEmojiClick(name)
+                    }}>
+                    <Text style={{fontSize: 30}}><Emoji name={name}/></Text>
+                  </TouchableOpacity>
+                )              
+              })
+            }
+          </View>
+          <View style={{flex:1, flexDirection:'row', flexWrap: 'wrap',justifyContent: 'space-around'}}>
+            {
+              emojis["2"].map((name, index)=>{
+                return(
+                  <TouchableOpacity key={index} style={{margin:8}} onPress={() => {
+                        this.handleEmojiClick(name)
+                    }}>
+                    <Text style={{fontSize: 30}}><Emoji name={name}/></Text>
+                  </TouchableOpacity>
+                )              
+              })
+            }
+          </View>
+        </Swiper>
+      </View>
+    </Animated.View>
   }
 
   render() {
@@ -611,6 +705,7 @@ class GiftedMessenger extends Component {
       <View style={this.styles.container}>
         {this.renderAnimatedView()}
         {this.renderTextInput()}
+        {this.state.showEmoji? this.renderEmoji():null}
       </View>
     );
   }
@@ -653,9 +748,9 @@ GiftedMessenger.defaultProps = {
   text: '',
   typingMessage: '',
   textInputRightIcon: '',
-  textInputRightIconAction: ()=>{},
+  textInputLeftIconAction: ()=>{},
   textInputLeftIcon: '',
-  textInputLeftIconAction: ()=>{}
+  textInputRightIconToggle: ''
 };
 
 GiftedMessenger.propTypes = {
@@ -697,9 +792,9 @@ GiftedMessenger.propTypes = {
   submitOnReturn: React.PropTypes.bool,
   typingMessage: React.PropTypes.string,
   textInputRightIcon: React.PropTypes.string,
-  textInputRightIconAction: React.PropTypes.func,
-  textInputLeftIcon: React.PropTypes.string,
   textInputLeftIconAction: React.PropTypes.func,
+  textInputLeftIcon: React.PropTypes.string,
+  textInputRightIconToggle: React.PropTypes.string,
 };
 
 
