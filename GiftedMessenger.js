@@ -263,6 +263,9 @@ class GiftedMessenger extends Component {
     if (Platform.OS === 'android') {
       this.onKeyboardWillShow(e);
     }
+    this.setState({
+      showEmoji: true,
+    },)  
 
     setTimeout(() => {
       this.scrollToBottom();
@@ -588,7 +591,7 @@ class GiftedMessenger extends Component {
             <Image source={this.props.textInputLeftIcon} style ={{width:30,height:30, alignSelf:'center'}}/>
           </Button>
           <TextInput
-            ref ="textInput"
+            ref={(input)=> {this.input = input} }
             style={this.styles.textInput}
             placeholder={this.props.placeholder}
             placeholderTextColor={this.props.placeholderTextColor}
@@ -622,34 +625,35 @@ class GiftedMessenger extends Component {
   }
 
   handleEmojiOpen() {
+
+    if(this.input.isFocused){
+      this.input.blur()
+    }
     this.setState({
       showEmoji: true,
-    })
-    Keyboard.dismiss()
-    Animated.timing(this.state.height, {
-      toValue: this.listViewMaxHeight -260,
-      duration: 200,
-    }).start();
-    Animated.timing(          // Uses easing functions
-        this.state.actionAnim,    // The value to drive
-        {toValue: 1}           // Configuration
-    ).start();
+    },)   
+    setTimeout(()=>{
+      Animated.timing(         
+        this.state.actionAnim,    
+        {toValue: 1}          
+      ).start();
+      Animated.timing(this.state.height, {
+        toValue: this.listViewMaxHeight -260,
+        duration: 200,
+      }).start();    
+    },1000)
+    
   }
 
-   handleEmojiClose() {
+  handleEmojiClose() {
     this.setState({
       showEmoji: false,
     })
-    Animated.timing(this.state.height, {
-      toValue: this.listViewMaxHeight,
-      duration: 200,
-    }).start();
-    Animated.timing(          // Uses easing functions
-        this.state.actionAnim,    // The value to drive
-        {toValue: 0}           // Configuration
+    Animated.timing(          
+        this.state.actionAnim,   
+        {toValue: 0}        
     ).start();
-
-    this.refs["textInput"].focus();
+    this.input.focus();
   }
 
   handleEmojiClick(name){
@@ -705,7 +709,7 @@ class GiftedMessenger extends Component {
       <View style={this.styles.container}>
         {this.renderAnimatedView()}
         {this.renderTextInput()}
-        {this.state.showEmoji? this.renderEmoji():null}
+        {this.renderEmoji()}
       </View>
     );
   }
