@@ -84,7 +84,6 @@
     "deep-equal": "^1.0.1",
     "moment": "^2.10.6",
     "react-native-button": "^1.5.0",
-    "react-native-gifted-spinner": "^0.0.4",
     "react-native-parsed-text": "0.0.12"
   },
   "description": "Chat UI for iOS and Android React-Native apps",

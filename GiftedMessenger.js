@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import Message from './Message';
-import GiftedSpinner from 'react-native-gifted-spinner';
+import GiftedSpinner from './GiftedSpinner';
 import moment from 'moment';
 import {setLocale} from './Locale';
 import deepEqual from 'deep-equal';
