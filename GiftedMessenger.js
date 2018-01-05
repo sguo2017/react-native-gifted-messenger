@@ -57,7 +57,7 @@ class GiftedMessenger extends Component {
     }
 
     this.listViewMaxHeight = this.props.maxHeight - textInputHeight;
-
+    
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => {
         if (r1.status !== r2.status) {
@@ -253,10 +253,18 @@ class GiftedMessenger extends Component {
   }
 
   onKeyboardWillShow(e) {
-    Animated.timing(this.state.height, {
-      toValue: this.listViewMaxHeight - e.endCoordinates.height,
-      duration: 200,
-    }).start();
+    if(Platform.OS === 'android'){
+      Animated.timing(this.state.height, {
+        toValue: this.listViewMaxHeight - e.endCoordinates.height,
+        duration: 200,
+      }).start();
+    }else{
+      Animated.timing(this.state.height, {
+        toValue: this.listViewMaxHeight,
+        duration: 200,
+      }).start();
+      
+    }
   }
 
   onKeyboardDidShow(e) {
@@ -266,9 +274,8 @@ class GiftedMessenger extends Component {
     this.setState({
       showEmoji: true,
     },)  
-
     setTimeout(() => {
-      this.scrollToBottom();
+      this.refs.listView.scrollToEnd({animated: true});
     }, (Platform.OS === 'android' ? 200 : 100));
   }
 
@@ -548,7 +555,7 @@ class GiftedMessenger extends Component {
           onLayout={this.onLayout}
           renderFooter={this.renderFooter}
           onChangeVisibleRows={this.onChangeVisibleRows}
-
+          
           style={this.styles.listView}
 
           // not supported in Android - to fix this issue in Android, onKeyboardWillShow is called inside onKeyboardDidShow
